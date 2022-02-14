@@ -3,7 +3,6 @@ use select::document::Document;
 use select::predicate::Name;
 use url::Url;
 use log::info;
-use serde::Serialize;
 use thiserror::Error;
 
 // We can use the macro on thiserror crate
@@ -46,11 +45,21 @@ impl LinkExtractor {
                     links.push(url); 
                 },
                 Err(url::ParseError::RelativeUrlWithoutBase) => {
-                    let url = base_url.join(href)?;
-                    links.push(url);
+                    match base_url.join(href) {
+                        Ok(mut url) => {
+                            // When you open a URL with a fragment in your browser, 
+                            // it scrolls the page to the position of the element.
+                            url.set_fragment(None);
+                            links.push(url);
+                        },
+                        Err(e) => {
+                            // When error occurs in URL operation, log
+                            log::warn!("URL join error:{}", e);
+                        }
+                    }
                 },
                 Err(e) => {
-                    println!("Error: {}", e);
+                    log::warn!("URL parse Error: {}", e);
                 }
             }
         }
