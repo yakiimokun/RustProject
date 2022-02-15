@@ -34,10 +34,16 @@ impl LinkExtractor {
         let response  = self.client.get(url).send().map_err(|e| GetLinksError::SendRequest(e))?;
         let base_url  = response.url().clone(); // clone object 
         let status    = response.status();
+        let headers   = response.headers().clone();
         let body      = response.text()?;
         let doc       = Document::from(body.as_str()); // create HTML Document Object
         let mut links = Vec::new();
         info!("Retrieved {} \"{}\"", status, base_url);
+
+        // response header
+        for (key, value) in headers.iter() {
+            log::debug!("{:?}: {:?} ", key, value);
+        }
 
         for href in doc.find(Name("a")).filter_map(|a| a.attr("href")) {
             match Url::parse(href) {
