@@ -1301,7 +1301,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "web_clawler"
+name = "web_crawler"
 version = "0.1.0"
 dependencies = [
  "env_logger",

@@ -1,7 +1,11 @@
+pub mod crawler;
+
 use std::env;
 use url::Url;
-use web_clawler::LinkExtractor;
+use web_crawler::LinkExtractor;
+use web_crawler::crawler::Crawler;
 use reqwest::blocking::ClientBuilder;
+use std::time::Duration;
 
 // eyre::Result<T> means Box<dyn std::error::Error>
 // Box <dyn Trait> is generalized std::error::Error 
@@ -16,10 +20,12 @@ fn main() -> eyre::Result<()> {
     let client = ClientBuilder::new().build()?;
     let extractor = LinkExtractor::from_client(client);
 
-    let links = extractor.get_links(url)?;
+    let crawler = Crawler::new(&extractor, url);
+    let wait = Duration::from_millis(100);
 
-    for link in links.iter() {
-        println!("{}", link);
+    for url in crawler.take(10) {
+        println!("{}", url);
+        std::thread::sleep(wait.clone());
     }
 
     Ok(())
