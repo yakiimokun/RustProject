@@ -1,9 +1,14 @@
+pub mod crawler;
+// crate root file
+
 use reqwest::blocking::Client;
 use select::document::Document;
 use select::predicate::Name;
 use url::Url;
 use log::info;
 use thiserror::Error;
+
+// pub mod clawler;
 
 // We can use the macro on thiserror crate
 #[derive(Error, Debug)]
